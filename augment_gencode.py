@@ -3,14 +3,14 @@ exons = []
 start_codons = {}
 stop_codons = {}
 genes = {}
-filePath = "some file path"
-outputFilePath = "output file path"
+filePath = "C:/Users/mjk140030/Desktop/GTEx/toy_gtf.gtf"
+outputFilePath = "C:/Users/mjk140030/Desktop/GTEx/toy_gtf2.txt"
 with open(filePath) as f:  # setup lists
     print("Opened file. Setting up dictionary definitions..."),
     for line in f:
-        if "\texon" in line:
+        if "\texon\t" in line:
             exons.append(line)
-        elif "\tstart_codon" in line:
+        elif "\tstart_codon\t" in line:
             elements = line.replace('\"', '').replace(';', '').split()
             key = elements[11]  # transcriptID
             if key in start_codons:  # if transcriptID already in dictionary,
@@ -18,7 +18,7 @@ with open(filePath) as f:  # setup lists
             else:
                 value = elements[4]  # end
             start_codons[key] = value
-        elif "\tstop_codon" in line:
+        elif "\tstop_codon\t" in line:
             elements = line.replace('\"', '').replace(';', '').split()
             key = elements[11]  # transcriptID
             if key in stop_codons:  # if transcriptID already in dictionary,
@@ -26,7 +26,7 @@ with open(filePath) as f:  # setup lists
             else:
                 value = elements[4]  # end
             stop_codons[key] = value
-        elif "\tgene" in line:
+        elif "\tgene\t" in line:
             elements = line.replace('\"', '').replace(';', '').split()
             key = elements[9]  # gene_id
             value = elements[3] + "," + elements[4]  # gene_start,gene_stop
