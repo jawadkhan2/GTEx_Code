@@ -2,9 +2,6 @@
 # 0_chr1_11869_12227_+, 1_ENSG00000223972.4, 2_ENST00000456328.2, 3_pseudogene, 4_DDX11L1, 5_1, 6_MISSING_START,
 # 7_MISSING_STOP, 8_12010, 9_13670
 from __future__ import division
-types = {10000: "5UTR", 11000: "5UTR,SAC", 11100: "5UTR,SAC,CDS", 11110: "5UTR,SAC,CDS,SPC", 11111: "5UTR,SAC,CDS,SPC,3UTR", 01000: "SAC", 01100: "SAC,CDS", 01110: "SAC,CDS,SPC", 01111: "SAC,CDS,SPC,3UTR",
-         00110: "CDS,SPC", 00111: "CDS,SPC,3UTR", 00011: "SPC,3UTR", 00001: "3UTR", 00000: "NO_MATCH"
-         }
 augmentedDBpath = "C:/Users/mjk140030/Desktop/GTEx/toyFile.txt"
 outputPath = augmentedDBpath[:-4] + "_ver2.txt"
 with open(augmentedDBpath) as f:
@@ -85,18 +82,30 @@ def get_type(line):
 
 
 def vec_to_str(vector):
-    vector = list(vector)
-    first_1 = vector.index(1)
-    vector.reverse()
-    last_1 = vector.index(1)
-    if first_1 == last_1:
-        return "CDS"
-    for x in range(first_1, last_1+1):
-        vector[x] = 1
-    typeNumber = ""
-    for v in vector:
-        typeNumber += str(v)
-    return types[int(typeNumber)]
+    vector = map(int, list(vector))
+    if len(vector) < 5:
+        print("VECTOR ERROR: INCORRECT LENGTH")
+        return "ERROR"
+    if vector.count(1) > 2:
+        print("VECTOR ERROR: MORE THAN 2 HITS!")
+        return "ERROR"
+    if vector.count(1) == 2 :  # more than one exon type, have to fill in between the ones
+        first1 = vector.index(1)
+        last1 = vector[first1+1:].index(1) + (5-len(vector[first1+1:]))
+        for x in range(first1, last1+1):
+            vector[x] = 1
+    exonType = ""
+    if vector[0] == 1:  # must be 5UTR
+        exonType += "5UTR,"
+    if vector[1] == 1:  # must be SAC
+        exonType += "SAC,"
+    if vector[2] == 1:
+        exonType += "CDS,"
+    if vector[3] == 1:
+        exonType += "SPC,"
+    if vector[4] == 1:
+        exonType += "3UTR,"
+    return exonType[:-1]  # remove the extra comma at the end
 
 
 with open(augmentedDBpath) as f:
